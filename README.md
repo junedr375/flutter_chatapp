@@ -1,16 +1,15 @@
 # chatapp
 
-A new Flutter project.
+## Chatapp with firebase
+user can authenticate with google or email and password. Used firebase as backend
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+![flutter_01](https://user-images.githubusercontent.com/49837673/90953050-f6c35080-e485-11ea-805c-9452ad6834a2.png)
+![flutter_02](https://user-images.githubusercontent.com/49837673/90953052-f88d1400-e485-11ea-8faa-42a127ae3459.png)
+![flutter_03](https://user-images.githubusercontent.com/49837673/90953053-f9be4100-e485-11ea-827e-5a6b4e02b14c.png)
+![flutter_04](https://user-images.githubusercontent.com/49837673/90953043-ee6b1580-e485-11ea-95e1-ac347bd4695b.png)
+![flutter_05](https://user-images.githubusercontent.com/49837673/90953047-f460f680-e485-11ea-93ab-5016e2cbefc5.png)
+![flutter_06](https://user-images.githubusercontent.com/49837673/90953049-f5922380-e485-11ea-96b1-c69a442d9b46.png)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
