@@ -40,10 +40,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
    
     
     var status = await HelperFunction.getUserLoggedInSharedPreference();
-    
+    print(status);
     if(status){
+
       setState((){
-          defaultHome = ChatRoom() ;
+          defaultHome = ChatRoom();
       });
     }else {
       setState((){

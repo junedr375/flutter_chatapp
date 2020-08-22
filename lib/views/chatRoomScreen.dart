@@ -68,7 +68,7 @@ class _ChatRoomState extends State<ChatRoom> {
 	Widget build(BuildContext context) {
 		return Scaffold(
 			appBar: AppBar(
-				title: Text('ChatApp', style:TextStyle(color:Colors.white,fontSize:20, fontWeight:FontWeight.w700)),
+				title: Text(Contants.myName, style:TextStyle(color:Colors.white,fontSize:20, fontWeight:FontWeight.w700)),
 				actions: [
 					GestureDetector(
 						child:Container(
@@ -126,7 +126,7 @@ class ChatRoomTile extends StatelessWidget {
 				)
 			),
 			onTap:(){
-			  Navigator.push(context, MaterialPageRoute(builder: (context) =>ConversationScreen(chatRoomId) ));
+			  Navigator.push(context, MaterialPageRoute(builder: (context) =>ConversationScreen(userName,chatRoomId) ));
 			}
 		);
 	}

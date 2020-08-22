@@ -8,8 +8,9 @@ import 'package:chatapp/helper/constants.dart';
 
 
 class ConversationScreen extends StatefulWidget {
+	final String roomName;
 	final String chatRoomId;
-	ConversationScreen(this.chatRoomId);
+	ConversationScreen(this.roomName,this.chatRoomId);
 	@override
 	_ConversationScreenState createState() => _ConversationScreenState();
 }
@@ -27,10 +28,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
 			stream: chatMessageStream,
 			builder: (context, snapshot){
 				return snapshot.hasData ? Container( 
-					height: MediaQuery.of(context).size.height*0.75,
+					height: MediaQuery.of(context).size.height*0.78,
 					child:ListView.builder(
 					//reverse: true,
-					shrinkWrap: true,
+					//shrinkWrap: true,
 					controller: _scrollController,
 				  itemCount: snapshot.data.documents.length,
 					itemBuilder: (context,index){
@@ -69,17 +70,49 @@ class _ConversationScreenState extends State<ConversationScreen> {
 	  			chatMessageStream = value;
 	  		});
 	  	});
+  		
 	 	super.initState();
+	}
+
+	scrollDown(){
+		_scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      curve: Curves.easeOut,
+      duration: const Duration(milliseconds: 100),
+    );
 	}
 		
 
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
-			appBar: appBarMain(context),
+			appBar: AppBar(
+				title: Text(widget.roomName, style:TextStyle(color:Colors.white,fontSize:20, fontWeight:FontWeight.w700)),
+			),
 			body: Stack(
 				children: <Widget>[
 					ChatMessageList(),
+					Container(
+						height: MediaQuery.of(context).size.height*0.10,
+						//padding: EdgeInsets.only(top:MediaQuery.of(context).size.height*0.10),
+						alignment: Alignment.center,
+						child: GestureDetector(
+							child: Container(
+								height:50,
+								width:50,
+								padding: EdgeInsets.only(bottom:5,top:5),
+								child:Center(child:Icon(Icons.keyboard_arrow_down,size:50),),
+								decoration: BoxDecoration(
+									borderRadius: BorderRadius.circular(40),
+									color: Colors.white.withOpacity(0.3),
+								)
+							),
+
+							onTap: () {
+								scrollDown();
+							}
+						),	
+					),
 					Container(
 						alignment: Alignment.bottomCenter,
 						child:Container(
@@ -119,8 +152,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
 							)//Row
 						),//Container
 					),
+
+
 				]
-			)
+			),
+		//	floatingActionButton: 
 		);
 	}
 }

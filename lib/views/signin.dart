@@ -15,6 +15,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 //modules
+import 'package:firebase_auth/firebase_auth.dart';
+
+
 
 class SignIn extends StatefulWidget {
   final Function toggle;
@@ -27,6 +30,7 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
 
 	bool isLoading = false;
+	bool hidePassword = true;
 
 
 	final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -39,7 +43,7 @@ class _SignInState extends State<SignIn> {
 
 	QuerySnapshot snapshotUserInfo;
 
-	signMeIn() {
+	signMeIn(BuildContext context) {
 		if(formKey.currentState.validate()){
 
 			HelperFunction.saveUserEmailSharedPreference(emailTextEditingController.text);
@@ -58,14 +62,40 @@ class _SignInState extends State<SignIn> {
 			authMethods.signInwithEmailAndPassword(
 				emailTextEditingController.text, passwordTextEditingController.text
 			).then((val){
-				if(val !=null){	
+				if(val !=null){
 					
 					HelperFunction.saveUserLoggedInSharedPreference(true);
 					Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChatRoom() ));
+				} else {
+					String msg = 'Username and password mismatch\nTry Again with correct credential';
+					_showMyDialog(context, msg);
 				}
 			});
 
+
 		}
+	}
+
+	signInWithGoogle() async {
+		FirebaseUser user = await authMethods.signInWithGoogle();
+		if(user!=null){
+			Map<String, String> userInfoMap = {
+					"name": user.displayName,
+					"email": user.email,
+				};
+			HelperFunction.saveUserEmailSharedPreference(user.email);
+			HelperFunction.saveUserNameSharedPreference(user.displayName);
+			HelperFunction.saveUserLoggedInSharedPreference(true);
+			Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChatRoom() ));
+			
+		}
+
+	}
+
+	changeHidePassword() {
+		setState((){
+			hidePassword = !hidePassword;
+		});
 	}
 
 	@override
@@ -83,32 +113,70 @@ class _SignInState extends State<SignIn> {
 					  	key: formKey,
 					  	child: Column(
 					  		children: <Widget>[
-									TextFormField(
-										validator: emailValidator,
-										controller: emailTextEditingController,
-										style: simpleTextStyle(),
-										decoration: textFieldInputDecoration('email'),
+					  		Container(
+									child: Row(
+										children: <Widget>[	
+											Container(
+												width: MediaQuery.of(context).size.width*0.70,
+													child:TextFormField(
+														validator: emailValidator,
+														controller: emailTextEditingController,
+														style: simpleTextStyle(),
+														decoration: textFieldInputDecoration('email'),
+													),
+												),
+												GestureDetector(
+													child:Container(
+														padding: EdgeInsets.only(left:20,top:20),
+														child: Icon(Icons.email,color:Colors.white54),
+													)
+												),
+											]
+										)
 									),
-									TextFormField(
-										obscureText: true,
-										validator: (val){
-											return val.isEmpty || val.length <6 ? "Enter atleast 6 character" : null;
-										},
-										controller: passwordTextEditingController,
-										style: simpleTextStyle(),
-										decoration: textFieldInputDecoration('password')
+									Container(
+										child: Row(
+											children: <Widget>[	
+												Container(
+													width: MediaQuery.of(context).size.width*0.70,
+													child:TextFormField(
+														obscureText: hidePassword,
+														validator: (val){
+															return val.isEmpty || val.length <6 ? "Enter atleast 6 character" : null;
+														},
+														controller: passwordTextEditingController,
+														style: simpleTextStyle(),
+														decoration: textFieldInputDecoration('password'),
+													),
+												),
+												GestureDetector(
+													child:Container(
+														padding: EdgeInsets.only(left:20,top:20),
+														child: Icon(hidePassword ? Icons.lock : Icons.lock_open,color:Colors.white54),
+													),
+													onTap: (){
+														changeHidePassword();
+													}
+												),
+											]
+										)
 									),
 								]
 							)
 						),
 						SizedBox(height:8),
-						Container(
-							alignment: Alignment.centerRight,
-							child: Container(
-								padding: EdgeInsets.symmetric(horizontal:24,vertical:8),
-								child:Text('Forgot password?',style:simpleTextStyle())
-							)
-						),
+						GestureDetector(
+							child:Container(
+								alignment: Alignment.centerRight,
+								child: Container(
+									padding: EdgeInsets.symmetric(horizontal:24,vertical:8),
+									child:Text('Forgot password?',style:simpleTextStyle())
+								)
+							),
+							onTap:(){
+								sendTextWidget(context);
+							}
+						),	
 						SizedBox(height:12),
 						GestureDetector(
 							child:Container(
@@ -131,23 +199,28 @@ class _SignInState extends State<SignIn> {
 								)
 							),
 							onTap: () {
-								signMeIn();
+								signMeIn(context);
 							}
 						),
 						SizedBox(height:12),
-						Container(
-							alignment: Alignment.center,
-							width: MediaQuery.of(context).size.width,
-							padding: EdgeInsets.symmetric(vertical: 20),
-							decoration: BoxDecoration(
-								color: Colors.white,
-								borderRadius: BorderRadius.circular(30),
-								),
-							child: Text("Sign In with Google", style:TextStyle(
-								color: Colors.black,
-								fontSize: 17,
+						GestureDetector(
+							child:Container(
+								alignment: Alignment.center,
+								width: MediaQuery.of(context).size.width,
+								padding: EdgeInsets.symmetric(vertical: 20),
+								decoration: BoxDecoration(
+									color: Colors.white,
+									borderRadius: BorderRadius.circular(30),
+									),
+								child: Text("Sign In with Google", style:TextStyle(
+									color: Colors.black,
+									fontSize: 17,
+									)
 								)
-							)
+							),
+							onTap:(){
+								signInWithGoogle();
+							}
 						),
 						SizedBox(height:16),
 						Container(
@@ -187,4 +260,39 @@ class _SignInState extends State<SignIn> {
     else
       return null;
   }
+
+  Future<void> _showMyDialog(BuildContext context,String msg) async {
+	  return showDialog<void>(
+	    context: context,
+	    barrierDismissible: true, // user must tap button!
+	    builder: (BuildContext context) {
+	      return AlertDialog(
+
+	        title: Text('HEY!'),
+	        shape: RoundedRectangleBorder(
+	          borderRadius:
+	              BorderRadius.circular(20.0)),
+	        content: SingleChildScrollView(
+	          child: ListBody(
+	            children: <Widget>[
+	              Text(msg), 
+	            ],
+	          ),
+	        ),
+	        actions: <Widget>[       
+	          FlatButton(
+	            child: Center(
+	              child:Text('Back',
+	                style: TextStyle(color: Colors.red,fontSize:20),
+	              ),
+	            ),
+	            onPressed: () {
+	              Navigator.of(context).pop();
+	            },
+	          ),
+	        ],
+	      );
+	    },
+	  );
+	}
 }

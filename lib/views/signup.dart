@@ -14,6 +14,7 @@ import 'package:chatapp/helper/helperfunction.dart';
 
 
 //modules
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 class SignUp extends StatefulWidget {
@@ -29,6 +30,7 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
 
 	bool isLoading = false;
+	bool hidePassword = true;
 
 
 	final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -39,6 +41,9 @@ class _SignUpState extends State<SignUp> {
 	
 	AuthMethods authMethods = new AuthMethods();
 	DatabaseMethods databaseMethods = new DatabaseMethods();
+
+
+	
 
 	signMeUp() {
 		if(formKey.currentState.validate()){
@@ -66,6 +71,29 @@ class _SignUpState extends State<SignUp> {
 		}
 	}
 
+	signUpWithGoogle() async {
+		FirebaseUser user = await authMethods.signInWithGoogle();
+		if(user!=null){
+			Map<String, String> userInfoMap = {
+					"name": user.displayName,
+					"email": user.email,
+				};
+			HelperFunction.saveUserNameSharedPreference(user.displayName);
+			HelperFunction.saveUserEmailSharedPreference(user.email);
+			HelperFunction.saveUserLoggedInSharedPreference(true);
+			Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChatRoom() ));
+			
+		}
+	}
+
+
+	changeHidePassword() {
+		setState((){
+			hidePassword = !hidePassword;
+		});
+	}
+
+
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
@@ -80,47 +108,88 @@ class _SignUpState extends State<SignUp> {
 				child: ListView(
 					children: <Widget>[
 					  Padding(
-					  	padding: EdgeInsets.only(top:MediaQuery.of(context).size.height*0.20)
+					  	padding: EdgeInsets.only(top:MediaQuery.of(context).size.height*0.30)
 					  ),
 					  Form(
 					  	key: formKey,
 					  	child: Column(
 					  		children: <Widget>[
-									TextFormField(
-										validator: (val){
-											return val.isEmpty || val.length <4 ? "Enter more than 4 letter" : null;
-										},
-										controller: usernameTextEditingController,
-										style: simpleTextStyle(),
-										decoration: textFieldInputDecoration('username'),
-									),
-									TextFormField(
-										validator: emailValidator,
-										controller: emailTextEditingController,
-										style: simpleTextStyle(),
-										decoration: textFieldInputDecoration('email'),
-									),
-									TextFormField(
-										obscureText: true,
-										validator: (val){
-											return val.isEmpty || val.length <6 ? "Enter atleast 6 character" : null;
-										},
-										controller: passwordTextEditingController,
-										style: simpleTextStyle(),
-										decoration: textFieldInputDecoration('password')
+					  			Container(
+										child: Row(
+											children: <Widget>[	
+												Container(
+													width: MediaQuery.of(context).size.width*0.70,
+													child:TextFormField(
+														validator: (val){
+															return val.isEmpty || val.length <4 ? "Enter more than 4 letter" : null;
+														},
+														controller: usernameTextEditingController,
+														style: simpleTextStyle(),
+														decoration: textFieldInputDecoration('username'),
+														),
+													),
+													GestureDetector(
+														child:Container(
+															padding: EdgeInsets.only(left:20,top:20),
+															child: Icon(Icons.person,color:Colors.white54),
+														)
+													),
+												]
+											)
+										),
+					  			Container(
+										child: Row(
+											children: <Widget>[	
+												Container(
+													width: MediaQuery.of(context).size.width*0.70,
+													child:TextFormField(
+														validator: emailValidator,
+														controller: emailTextEditingController,
+														style: simpleTextStyle(),
+														decoration: textFieldInputDecoration('email'),
+														),
+													),
+													GestureDetector(
+														child:Container(
+															padding: EdgeInsets.only(left:20,top:20),
+															child: Icon(Icons.email,color:Colors.white54),
+														)
+													),
+												]
+											)
+										),
+					  			Container(
+										child: Row(
+											children: <Widget>[	
+												Container(
+													width: MediaQuery.of(context).size.width*0.70,
+													child:TextFormField(
+														obscureText: hidePassword,
+														validator: (val){
+															return val.isEmpty || val.length <6 ? "Enter atleast 6 character" : null;
+														},
+														controller: passwordTextEditingController,
+														style: simpleTextStyle(),
+														decoration: textFieldInputDecoration('password'),
+													),
+												),
+												GestureDetector(
+													child:Container(
+														padding: EdgeInsets.only(left:20,top:20),
+														child: Icon(hidePassword ? Icons.lock : Icons.lock_open,color:Colors.white54),
+													),
+													onTap: (){
+														changeHidePassword();
+													}
+												),
+											]
+										)
 									),
 								]
 							)
 						),
-						SizedBox(height:8),
-						Container(
-							alignment: Alignment.centerRight,
-							child: Container(
-								padding: EdgeInsets.symmetric(horizontal:24,vertical:8),
-								child:Text('Forgot password?',style:simpleTextStyle())
-							)
-						),
-						SizedBox(height:12),
+					
+						SizedBox(height:34),
 						GestureDetector(
 							child:Container(
 								alignment: Alignment.center,
@@ -146,19 +215,24 @@ class _SignUpState extends State<SignUp> {
 							}
 						),
 						SizedBox(height:12),
-						Container(
-							alignment: Alignment.center,
-							width: MediaQuery.of(context).size.width,
-							padding: EdgeInsets.symmetric(vertical: 20),
-							decoration: BoxDecoration(
-								color: Colors.white,
-								borderRadius: BorderRadius.circular(30),
-								),
-							child: Text("Sign Up with Google", style:TextStyle(
-								color: Colors.black,
-								fontSize: 17,
+						GestureDetector(
+							child:Container(
+								alignment: Alignment.center,
+								width: MediaQuery.of(context).size.width,
+								padding: EdgeInsets.symmetric(vertical: 20),
+								decoration: BoxDecoration(
+									color: Colors.white,
+									borderRadius: BorderRadius.circular(30),
+									),
+								child: Text("Sign Up with Google", style:TextStyle(
+									color: Colors.black,
+									fontSize: 17,
+									)
 								)
-							)
+							),
+							onTap:(){
+								signUpWithGoogle();
+							}
 						),
 						SizedBox(height:16),
 						Container(
@@ -199,4 +273,7 @@ class _SignUpState extends State<SignUp> {
     else
       return null;
   }
+
+
+   
 }
