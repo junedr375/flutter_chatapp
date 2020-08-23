@@ -7,8 +7,8 @@ import 'package:chatapp/services/auth.dart';
 import 'package:chatapp/services/database.dart';
 
 import 'package:chatapp/views/chatRoomScreen.dart';
+import 'package:chatapp/views/signin.dart';
 
-import 'package:chatapp/helper/authentication.dart';
 import 'package:chatapp/helper/helperfunction.dart';
 
 
@@ -19,8 +19,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUp extends StatefulWidget {
 
-	final Function toggle;
-  SignUp(this.toggle);
+/*	final Function toggle;
+  SignUp(this.toggle);*/
 
 
 	@override
@@ -248,8 +248,8 @@ class _SignUpState extends State<SignUp> {
 											)
 										),
 										onTap:(){
-											widget.toggle();
-												//Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignIn() ));
+											//widget.toggle();
+											Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignIn() ));
 										}
 									)
 								]

@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:chatapp/widgets/widget.dart';
 import 'package:chatapp/services/auth.dart';
 import 'package:chatapp/services/database.dart';
-//import 'package:chatapp/views/signin.dart';
+import 'package:chatapp/views/signin.dart';
 import 'package:chatapp/views/search.dart';
 import 'package:chatapp/views/conversationScreen.dart';
 
-import 'package:chatapp/helper/authentication.dart';
 import 'package:chatapp/helper/constants.dart';
 import 'package:chatapp/helper/helperfunction.dart';
 //modules
@@ -78,7 +77,7 @@ class _ChatRoomState extends State<ChatRoom> {
 						onTap: (){
 							authMethods.signOut();
 							HelperFunction.saveUserLoggedInSharedPreference(false);
-						  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate() ));
+						  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignIn() ));
 						}
 					)
 				]

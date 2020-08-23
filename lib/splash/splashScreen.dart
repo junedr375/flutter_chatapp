@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:chatapp/splash/animation/fadeanimation.dart';
 import 'package:chatapp/helper/helperfunction.dart';
 import 'package:chatapp/views/chatRoomScreen.dart';
-import 'package:chatapp/helper/authentication.dart';
 
-
+import 'package:chatapp/views/signin.dart';
 
 //modules
 import 'package:page_transition/page_transition.dart';
@@ -48,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       });
     }else {
       setState((){
-          defaultHome = Authenticate();
+          defaultHome = SignIn();
       });
     }
      

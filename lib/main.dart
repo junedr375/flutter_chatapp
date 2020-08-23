@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:chatapp/helper/authentication.dart';
 import 'package:chatapp/helper/helperfunction.dart';
 
 import 'package:chatapp/views/chatRoomScreen.dart';
